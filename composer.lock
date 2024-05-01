@@ -1,0 +1,55 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "e0208d4eac7bdbce70233534c659fa27",
+    "packages": [
+        {
+            "name": "cryptomus/api-php-sdk",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CryptomusCom/api-php-sdk.git",
+                "reference": "7d4cd3b50114951b649cb533fd8a2cb9a889e4c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CryptomusCom/api-php-sdk/zipball/7d4cd3b50114951b649cb533fd8a2cb9a889e4c6",
+                "reference": "7d4cd3b50114951b649cb533fd8a2cb9a889e4c6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cryptomus\\Api\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Cryptomus api SDK",
+            "support": {
+                "issues": "https://github.com/CryptomusCom/api-php-sdk/issues",
+                "source": "https://github.com/CryptomusCom/api-php-sdk/tree/v1.0.0"
+            },
+            "time": "2022-07-29T15:49:10+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.6"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}
