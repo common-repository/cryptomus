@@ -3,6 +3,7 @@
 namespace Cryptomus\Woocommerce;
 
 use Cryptomus\Api\Client;
+use Cryptomus\Api\RequestBuilder;
 use WC_Payment_Gateway;
 
 final class Gateway extends WC_Payment_Gateway
@@ -75,7 +76,7 @@ final class Gateway extends WC_Payment_Gateway
         $this->icon = esc_url(get_option('cryptomus_method_image')) ?: site_url($path);
         $this->subtract = $this->get_option('subtract') ?: 0;
         $this->payment = Client::payment($this->payment_key, $this->merchant_uuid);
-
+        $this->api = new RequestBuilder($this->payment_key, $this->merchant_uuid);
         add_action("woocommerce_update_options_payment_gateways_{$this->id}", array($this, 'process_admin_options'));
     }
 
@@ -159,7 +160,12 @@ final class Gateway extends WC_Payment_Gateway
         wc_reduce_stock_levels($order_id);
         WC()->cart->empty_cart();
 
-        return ['result' => 'success', 'redirect' => home_url('/cryptomus-pay?order_id='.$order_id)];
+        return ['result' => 'success', 'redirect' => home_url('/cryptomus-pay?order_id='.$order_id.'&step_id=1')];
+    }
+
+    public function request_currencies()
+    {
+        return $this->payment->services();
     }
 
     public function process_admin_options()

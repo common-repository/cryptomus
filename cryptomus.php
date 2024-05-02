@@ -49,20 +49,47 @@ function cryptomus_add_endpoint() {
 // Добавление функции регистрации endpoint к хуку init
 add_action('init', 'cryptomus_add_endpoint');
 
-function cryptomus_template_include($template) {
+function cryptomus_template_include($request) {
     global $wp_query;
+    $gateway = new Cryptomus\Woocommerce\Gateway();
 
-    // Проверка наличия запроса к нашему endpoint
     if (isset($wp_query->query_vars['cryptomus-pay'])) {
-        // Указание на новый путь шаблона
-        $new_template = plugin_dir_path(__FILE__) . 'templates/form1.php';
-        if (file_exists($new_template)) {
-            return $new_template;
+        // Получаем переменные из GET запроса
+        $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : null;
+        $step_id = isset($_GET['step_id']) ? intval($_GET['step_id']) : 1;
+
+        if ($step_id == 1) {
+            // Устанавливаем переменные, чтобы они были доступны в шаблоне
+            set_query_var('order_id', $order_id);
+            $currencies = $gateway->request_currencies();
+            $uniqueNetworks = [];
+            foreach ($currencies as $currency) {
+                if ($currency['is_available']) { // Учитываем только доступные сети
+                    $uniqueNetworks[$currency['network']] = $currency['network']; // Используем ключ массива для избежания дубликации
+                }
+            }
+            set_query_var('uniqueNetworks', array_keys($uniqueNetworks));
+            set_query_var('currencies', $currencies);
+
+            $new_template = plugin_dir_path(__FILE__) . 'templates/form1.php';
+            if (file_exists($new_template)) {
+                return $new_template;
+            }
+        } else if ($step_id == 2) {
+            $network = $_POST['network'] ?? null;
+            $to_currency = $_POST['to_currency'] ?? null;
+            set_query_var('network', $network);
+            set_query_var('to_currency', $to_currency);
+            $new_template = plugin_dir_path(__FILE__) . 'templates/form2.php';
+            if (file_exists($new_template)) {
+                return $new_template;
+            }
         }
     }
 
     return $template;
 }
+
 add_filter('template_include', 'cryptomus_template_include');
 
 
