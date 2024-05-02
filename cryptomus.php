@@ -40,6 +40,39 @@ add_filter('wc_order_statuses', function ($statuses) {
     return $statuses;
 });
 
+// Функция для регистрации нового endpoint
+function cryptomus_add_endpoint() {
+    add_rewrite_endpoint('cryptomus-pay', EP_ROOT);
+    flush_rewrite_rules(false);  // Используйте это только для отладки!
+}
+
+// Добавление функции регистрации endpoint к хуку init
+add_action('init', 'cryptomus_add_endpoint');
+
+function cryptomus_template_include($template) {
+    global $wp_query;
+
+    // Проверка наличия запроса к нашему endpoint
+    if (isset($wp_query->query_vars['cryptomus-pay'])) {
+        // Указание на новый путь шаблона
+        $new_template = plugin_dir_path(__FILE__) . 'templates/form1.php';
+        if (file_exists($new_template)) {
+            return $new_template;
+        }
+    }
+
+    return $template;
+}
+add_filter('template_include', 'cryptomus_template_include');
+
+
+function cryptomus_query_vars($vars) {
+    $vars[] = 'cryptomus-pay';
+    return $vars;
+}
+add_filter('query_vars', 'cryptomus_query_vars');
+
+
 add_action('rest_api_init', function () {
     $gateway = new Cryptomus\Woocommerce\Gateway();
     register_rest_route('cryptomus-webhook', $gateway->merchant_uuid, array(

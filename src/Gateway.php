@@ -93,7 +93,7 @@ final class Gateway extends WC_Payment_Gateway
             ],
             'payment_key' => [
                 'title' => '
-                Payment API-key 
+                Payment API-key
                 <p><font size="1">You can find the API key in the settings of your personal account. Read more <a href="https://cryptomus.com/blog/how-to-accept-crypto-on-your-wordpress-website-with-woocommerce-payment-plugin/?utm_source=wordpress&utm_medium=plugin-description">here</a>.</font></p>
                 ',
                 'type' => 'text'
@@ -159,26 +159,7 @@ final class Gateway extends WC_Payment_Gateway
         wc_reduce_stock_levels($order_id);
         WC()->cart->empty_cart();
 
-        try {
-            $payment = $this->payment->create([
-                'amount' => $order->get_total(),
-                'currency' => $order->get_currency(),
-                'order_id' => (string)$order_id,
-                'url_return' => $this->get_return_url($order),
-                'url_callback' => get_site_url(null, "wp-json/cryptomus-webhook/$this->merchant_uuid"),
-                'is_payment_multiple' => true,
-                'lifetime' => 7200,
-                'subtract' => $this->subtract,
-            ]);
-
-            return ['result' => 'success', 'redirect' => $payment['url']];
-        } catch (\Exception $e) {
-            $order->update_status(PaymentStatus::WC_STATUS_FAIL);
-            wc_increase_stock_levels($order);
-            $order->save();
-        }
-
-        return ['result' => 'success', 'redirect' => $this->get_return_url($order)];
+        return ['result' => 'success', 'redirect' => home_url('/cryptomus-pay?order_id='.$order_id)];
     }
 
     public function process_admin_options()
