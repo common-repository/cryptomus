@@ -1,46 +1,46 @@
-<?php
-get_header();  // Добавляет хидер темы
-// Получение данных, например, из GET-параметров или из сессии
-echo '<div style="display:block; width: 500px; margin: auto;">';
-echo '<h1>Cryptomus Payment Gateway</h1>';
-$order_id = get_query_var('order_id');
-$currencies = get_query_var('currencies');
-$uniqueNetworks = get_query_var('uniqueNetworks');
-?>
-<form action="/cryptomus-pay/?order_id=<?=$order_id?>&step_id=2" method="post">
-    <label for="network">Choose a network:</label>
-    <select name="network" id="network">
-        <?php foreach ($uniqueNetworks as $network): ?>
-            <option value="<?= $network ?>"><?= $network ?></option>
-        <?php endforeach; ?>
-    </select>
-    <label for="to_currency">Choose a currency:</label>
-    <select name="to_currency" id="to_currency">
-        <?php foreach ($currencies as $currency): ?>
-            <?php if ($currency['is_available']): ?>
-                <option value="<?= $currency['currency'] ?>" data-network="<?= $currency['network'] ?>"><?= $currency['currency'] ?></option>
-            <?php endif; ?>
-        <?php endforeach; ?>
-    </select>
-    <br/><br/>
-    <button type="submit">Pay Now</button>
-</form>
-<br/><br/>
-<script>
+<? $params = get_query_var('params') ?>
+<? get_header() ?>
+
+<div style="display:block; width: 500px; margin: auto; text-align: center;">
+	<h1>Cryptomus Payment Gateway</h1>
+	<div>
+		<p><span>Amount: </span><span><?= $params['order_amount'] ?> <?= $params['order_currency'] ?></span></p>
+	</div>
+	<form action="/cryptomus-pay/" method="get">
+			<input name="order_id" value="<?=$params['order_id']?>" type="hidden" />
+			<input name="step_id" value="2" type="hidden" 	/>
+	    <label for="network">Choose a network:</label>
+	    <select name="network" id="network">
+	        <? foreach ($params['unique_networks'] as $network): ?>
+	            <option value="<?= $network ?>"><?= $network ?></option>
+	        <? endforeach; ?>
+	    </select>
+	    <label for="to_currency">Choose a currency:</label>
+	    <select name="to_currency" id="to_currency">
+	        <? foreach ($params['currencies'] as $currency): ?>
+	            <? if ($currency['is_available']): ?>
+	                <option value="<?= $currency['currency'] ?>" data-network="<?= $currency['network'] ?>"><?= $currency['currency'] ?></option>
+	            <? endif ?>
+	        <? endforeach ?>
+	    </select>
+	    <br/><br/>
+	    <button type="submit">Pay Now</button>
+	</form>
+	<br/><br/>
+</div>
+
+<script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function () {
     var networkSelect = document.getElementById('network');
-    var currencySelect = document.getElementById('currency');
-
+    var currencySelect = document.getElementById('to_currency');
     function updateCurrencies() {
         var selectedNetwork = networkSelect.value;
         var options = currencySelect.options;
-
         for (var i = 0; i < options.length; i++) {
             var option = options[i];
             var currencyNetwork = option.dataset.network;
             option.style.display = currencyNetwork === selectedNetwork ? 'block' : 'none';
         }
-        // Automatically select the first available option
         for (var i = 0; i < options.length; i++) {
             if (options[i].style.display !== 'none') {
                 currencySelect.selectedIndex = i;
@@ -48,16 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
     networkSelect.addEventListener('change', updateCurrencies);
-
-    // Initialize on page load
     updateCurrencies();
 });
 </script>
-<?php
-echo '</div>';
-// echo 'CURRENCIES: <pre>' . print_r($currencies, true) . '</pre>';
-// Форма оплаты
-get_footer();
-?>
+
+<? get_footer() ?>

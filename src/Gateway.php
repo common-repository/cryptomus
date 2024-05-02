@@ -151,16 +151,38 @@ final class Gateway extends WC_Payment_Gateway
      * @param $order_id
      * @return array
      */
-    public function process_payment($order_id)
-    {
+    public function process_payment($order_id) {
         $order = wc_get_order($order_id);
         $order->update_status(PaymentStatus::WC_STATUS_PENDING);
         $order->save();
-
         wc_reduce_stock_levels($order_id);
         WC()->cart->empty_cart();
-
         return ['result' => 'success', 'redirect' => home_url('/cryptomus-pay?order_id='.$order_id.'&step_id=1')];
+    }
+
+    public function create_h2h_payment($order_id, $network, $to_currency) {
+        $order = wc_get_order($order_id);
+        try {
+            $payment = $this->payment->create([
+                'amount' => $order->get_total(),
+                'currency' => $order->get_currency(),
+                'order_id' => 'woo_h2h_'.$network.'_'.$to_currency.'_'.(string)$order_id,
+                'url_return' => $this->get_return_url($order),
+                'url_callback' => get_site_url(null, "wp-json/cryptomus-webhook/$this->merchant_uuid"),
+                'is_payment_multiple' => true,
+                'lifetime' => 7200,
+                'subtract' => $this->subtract,
+                'network' => $network,
+                'to_currency' => $to_currency
+            ]);
+
+            return $payment;
+        } catch (\Exception $e) {
+            $order->update_status(PaymentStatus::WC_STATUS_FAIL);
+            wc_increase_stock_levels($order);
+            $order->save();
+            return false;
+        }
     }
 
     public function request_currencies()
