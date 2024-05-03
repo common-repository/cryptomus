@@ -49,11 +49,17 @@ function cryptomus_add_endpoint() {
 // Добавление функции регистрации endpoint к хуку init
 add_action('init', 'cryptomus_add_endpoint');
 
-function cryptomus_template_include($request) {
+function cryptomus_template_include($template) {
 	global $wp_query;
-	$gateway = new Cryptomus\Woocommerce\Gateway();
-
 	if (isset($wp_query->query_vars['cryptomus-pay'])) {
+		$gateway = new Cryptomus\Woocommerce\Gateway();
+
+		// Проверяем, что h2h включен в админке. Иначе на главную
+		if ($gateway->h2h !== "yes") {
+			wp_redirect(home_url());
+			exit;
+		}
+
 		$order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : null;
 		$step_id = isset($_GET['step_id']) ? intval($_GET['step_id']) : 1;
 		$order = wc_get_order($order_id);
@@ -63,9 +69,7 @@ function cryptomus_template_include($request) {
 			$unique_networks = [];
 
 			foreach ($currencies as $currency) {
-				if ($currency['is_available']) {
-					$unique_networks[$currency['network']] = $currency['network'];
-				}
+				$unique_networks[$currency['network']] = $currency['network'];
 			}
 
 			$params = [
@@ -74,6 +78,7 @@ function cryptomus_template_include($request) {
 				'currencies' => $currencies,
 				'order_amount' => $order->get_total(),
 				'order_currency' => $order->get_currency(),
+				'theme' => $gateway->theme,
 			];
 
 			set_query_var('params', $params);
@@ -92,6 +97,7 @@ function cryptomus_template_include($request) {
 				'payment' => $payment,
 				'network' => $network,
 				'to_currency' => $to_currency,
+				'theme' => $gateway->theme,
 			];
 			set_query_var('params', $params);
 			$new_template = plugin_dir_path(__FILE__) . 'templates/form2.php';
@@ -156,3 +162,29 @@ add_action('rest_api_init', function () {
 	));
 });
 
+add_action('rest_api_init', function () {
+	register_rest_route('cryptomus-pay', '/check-status', array(
+		'methods' => 'POST',
+		'callback' => 'check_payment_status',
+		'permission_callback' => '__return_true'
+	));
+});
+
+function check_payment_status(WP_REST_Request $request) {
+	$order_id = $request->get_param('order_id');
+	if (empty($order_id)) {
+		return new WP_REST_Response(['error' => 'Order ID is required'], 400);
+	}
+	$gateway = new Cryptomus\Woocommerce\Gateway();
+	$result = $gateway->payment->info(['order_id' => $order_id]);
+	return new WP_REST_Response($result, 200);
+}
+
+// Подключение JavaScript файла на странице настроек плагина
+function plugin_enqueue_admin_scripts($hook) {
+    // Проверяем, находится ли административная страница настроек вашего плагина
+    if (isset($_GET['page']) && $_GET['page'] === 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] === 'checkout' && isset($_GET['section']) && $_GET['section'] === 'cryptomus') {
+        wp_enqueue_script('plugin-admin-script', plugins_url('js/plugin-admin.js', __FILE__), array('jquery'), null, true);
+    }
+}
+add_action('admin_enqueue_scripts', 'plugin_enqueue_admin_scripts');

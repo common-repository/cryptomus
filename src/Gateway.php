@@ -3,7 +3,6 @@
 namespace Cryptomus\Woocommerce;
 
 use Cryptomus\Api\Client;
-use Cryptomus\Api\RequestBuilder;
 use WC_Payment_Gateway;
 
 final class Gateway extends WC_Payment_Gateway
@@ -44,11 +43,14 @@ final class Gateway extends WC_Payment_Gateway
      * @var string
      */
     private $payment_key;
-
     /**
      * @var string
      */
-    private $logo_theme;
+    public $lifetime;
+    public $accepted_networks;
+    public $accepted_currencies;
+    public $h2h;
+    public $theme;
 
     public function __construct()
     {
@@ -70,13 +72,15 @@ final class Gateway extends WC_Payment_Gateway
 
         $this->payment_key = $this->get_option('payment_key');
         $this->merchant_uuid = $this->get_option('merchant_uuid');
-        $this->logo_theme = $this->get_option('logo_theme') ?: 'light';
-
-        $path = str_replace(ABSPATH, '', __DIR__) . "/images/logo_$this->logo_theme.svg";
-        $this->icon = esc_url(get_option('cryptomus_method_image')) ?: site_url($path);
-        $this->subtract = $this->get_option('subtract') ?: 0;
+        $path = str_replace(ABSPATH, '', __DIR__) . "/images/logo_light.svg";
+        $this->icon = esc_url(get_option('cryptomus_method_image')) ?? site_url($path);
+        $this->subtract = $this->get_option('subtract') ?? 0;
         $this->payment = Client::payment($this->payment_key, $this->merchant_uuid);
-        $this->api = new RequestBuilder($this->payment_key, $this->merchant_uuid);
+        $this->lifetime = $this->get_option('lifetime') ?? 2;
+        $this->theme = $this->get_option('theme') ?? 'light';
+        $this->h2h = $this->get_option('h2h');
+        $this->accepted_networks = $this->get_option('accepted_networks');
+        $this->accepted_currencies = $this->get_option('accepted_currencies');
         add_action("woocommerce_update_options_payment_gateways_{$this->id}", array($this, 'process_admin_options'));
     }
 
@@ -128,14 +132,6 @@ final class Gateway extends WC_Payment_Gateway
                 'desc_tip' => true,
                 'description' => 'Upload an image for the payment method',
             ],
-            /*'logo_theme' => [
-                'title' => 'Logo Theme',
-                'type' => 'select',
-                'options' => [
-                    'light' => 'Light',
-                    'dark' => 'Dark',
-                ]
-            ],*/
             'subtract' => [
                 'title' => 'How much commission does the client pay (0-100%)
                 <p><font size="1">Percentage of the payment commission charged to the client
@@ -143,6 +139,128 @@ final class Gateway extends WC_Payment_Gateway
                 ',
                 'type' => 'number',
                 'default' => 0,
+                'custom_attributes' => [
+                    'min' => 0,
+                    'max' => 100,
+                ],
+            ],
+            'lifetime' => [
+                'title' => 'Invoice Lifetime',
+                'type' => 'select',
+                'options' => [
+                    '1' => '1 Hour',
+                    '2' => '2 Hours',
+                    '3' => '3 Hours',
+                    '4' => '4 Hours',
+                    '5' => '5 Hours',
+                    '6' => '6 Hours',
+                    '7' => '7 Hours',
+                    '8' => '8 Hours',
+                    '9' => '9 Hours',
+                    '10' => '10 Hours',
+                    '11' => '11 Hours',
+                    '12' => '12 Hours',
+                ],
+                'default' => '2',
+            ],
+            'h2h' => [
+                'title' => __('Host-to-Host'),
+                'type' => 'checkbox',
+                'default' => 'no'
+            ],
+            'theme' => [
+                'title' => 'Theme',
+                'type' => 'select',
+                'options' => [
+                    'light' => 'Light',
+                    'dark' => 'Dark',
+                ]
+            ],
+            'accepted_networks' => [
+                'title' => 'Accepted Networks',
+                'type' => 'multiselect',
+                'options' => [
+                    'ETH' => 'Ethereum (ETH)',
+                    'ARBITRUM' => 'Arbitrum (ARBITRUM)',
+                    'TRON' => 'Tron (TRON)',
+                    'DOGE' => 'Dogecoin (DOGE)',
+                    'DASH' => 'Dash (DASH)',
+                    'AVALANCHE' => 'Avalanche (AVALANCHE)',
+                    'SOL' => 'Solana (SOL)',
+                    'BTC' => 'Bitcoin (BTC)',
+                    'XMR' => 'Monero (XMR)',
+                    'TON' => 'TON (TON)',
+                    'POLYGON' => 'Polygon (POLYGON)',
+                    'BCH' => 'Bitcoin Cash (BCH)',
+                    'LTC' => 'Litecoin (LTC)',
+                    'BSC' => 'Binance Smart Chain (BSC)',
+                ],
+                'default' => [
+                    'ETH',
+                    'ARBITRUM',
+                    'TRON',
+                    'DOGE',
+                    'DASH',
+                    'AVALANCHE',
+                    'SOL',
+                    'BTC',
+                    'XMR',
+                    'TON',
+                    'POLYGON',
+                    'BCH',
+                    'LTC',
+                    'BSC',
+                ], // Выбраны все сети по умолчанию
+                'class' => 'wc-enhanced-select', // Добавим класс для стилизации
+            ],
+            'accepted_currencies' => [
+                'title' => 'Accepted Currencies',
+                'type' => 'multiselect',
+                'options' => [
+                    'DOGE' => 'Dogecoin (DOGE)',
+                    'SHIB' => 'Shiba Inu (SHIB)',
+                    'CGPT' => 'ChatGPT Token (CGPT)',
+                    'MATIC' => 'Polygon (MATIC)',
+                    'BCH' => 'Bitcoin Cash (BCH)',
+                    'DAI' => 'Dai (DAI)',
+                    'VERSE' => 'Verse (VERSE)',
+                    'SOL' => 'Solana (SOL)',
+                    'BUSD' => 'Binance USD (BUSD)',
+                    'LTC' => 'Litecoin (LTC)',
+                    'ETH' => 'Ethereum (ETH)',
+                    'BNB' => 'Binance Coin (BNB)',
+                    'TRX' => 'TRON (TRX)',
+                    'USDC' => 'USD Coin (USDC)',
+                    'AVAX' => 'Avalanche (AVAX)',
+                    'DASH' => 'Dash (DASH)',
+                    'XMR' => 'Monero (XMR)',
+                    'BTC' => 'Bitcoin (BTC)',
+                    'USDT' => 'Tether (USDT)',
+                    'TON' => 'TON (TON)',
+                ],
+                'default' => [
+                    'DOGE',
+                    'SHIB',
+                    'CGPT',
+                    'MATIC',
+                    'BCH',
+                    'DAI',
+                    'VERSE',
+                    'SOL',
+                    'BUSD',
+                    'LTC',
+                    'ETH',
+                    'BNB',
+                    'TRX',
+                    'USDC',
+                    'AVAX',
+                    'DASH',
+                    'XMR',
+                    'BTC',
+                    'USDT',
+                    'TON',
+                ], // Выбраны все валюты по умолчанию
+                'class' => 'wc-enhanced-select', // Добавляем класс для стилизации
             ],
         ];
     }
@@ -152,12 +270,38 @@ final class Gateway extends WC_Payment_Gateway
      * @return array
      */
     public function process_payment($order_id) {
-        $order = wc_get_order($order_id);
-        $order->update_status(PaymentStatus::WC_STATUS_PENDING);
-        $order->save();
-        wc_reduce_stock_levels($order_id);
-        WC()->cart->empty_cart();
-        return ['result' => 'success', 'redirect' => home_url('/cryptomus-pay?order_id='.$order_id.'&step_id=1')];
+        if ($this->h2h == "yes") {
+            $order = wc_get_order($order_id);
+            $order->update_status(PaymentStatus::WC_STATUS_PENDING);
+            $order->save();
+            wc_reduce_stock_levels($order_id);
+            WC()->cart->empty_cart();
+            return ['result' => 'success', 'redirect' => home_url('/cryptomus-pay?order_id='.$order_id.'&step_id=1')];
+        } else {
+            $order = wc_get_order($order_id);
+            $order->update_status(PaymentStatus::WC_STATUS_PENDING);
+            $order->save();
+            wc_reduce_stock_levels($order_id);
+            WC()->cart->empty_cart();
+            try {
+                $payment = $this->payment->create([
+                    'amount' => $order->get_total(),
+                    'currency' => $order->get_currency(),
+                    'order_id' => (string)$order_id,
+                    'url_return' => $this->get_return_url($order),
+                    'url_callback' => get_site_url(null, "wp-json/cryptomus-webhook/$this->merchant_uuid"),
+                    'is_payment_multiple' => true,
+                    'lifetime' => (int)$this->lifetime * 3600,
+                    'subtract' => $this->subtract,
+                ]);
+                return ['result' => 'success', 'redirect' => $payment['url']];
+            } catch (\Exception $e) {
+                $order->update_status(PaymentStatus::WC_STATUS_FAIL);
+                wc_increase_stock_levels($order);
+                $order->save();
+            }
+            return ['result' => 'success', 'redirect' => $this->get_return_url($order)];
+        }
     }
 
     public function create_h2h_payment($order_id, $network, $to_currency) {
@@ -170,7 +314,7 @@ final class Gateway extends WC_Payment_Gateway
                 'url_return' => $this->get_return_url($order),
                 'url_callback' => get_site_url(null, "wp-json/cryptomus-webhook/$this->merchant_uuid"),
                 'is_payment_multiple' => true,
-                'lifetime' => 7200,
+                'lifetime' => (int)$this->lifetime * 3600,
                 'subtract' => $this->subtract,
                 'network' => $network,
                 'to_currency' => $to_currency
@@ -187,7 +331,14 @@ final class Gateway extends WC_Payment_Gateway
 
     public function request_currencies()
     {
-        return $this->payment->services();
+        $all_currencies = $this->payment->services();
+        $filtered_currencies = [];
+        foreach ($all_currencies as $currency) {
+            if ($currency['is_available'] && in_array($currency['network'], $this->accepted_networks) && in_array($currency['currency'], $this->accepted_currencies)) {
+                array_push($filtered_currencies, $currency);
+            }
+        }
+        return $filtered_currencies;
     }
 
     public function process_admin_options()
@@ -203,14 +354,14 @@ final class Gateway extends WC_Payment_Gateway
 
             if ($movefile && !isset($movefile['error'])) {
                 $image_url = $movefile['url'];
-                update_option('cryptomus_method_image', $image_url); // Replace 'cryptomus_method_image' with your preferred option name
+                update_option('cryptomus_method_image', $image_url);
             }
         }
     }
 
     public function admin_options()
     {
-        $image_url = get_option('cryptomus_method_image'); // Replace with your option name
+        $image_url = get_option('cryptomus_method_image');
 
         echo '<h2>' . esc_html($this->method_title) . '</h2>';
         echo '<div>' . $this->method_description . '</div>';

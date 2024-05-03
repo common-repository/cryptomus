@@ -1,7 +1,8 @@
 <? $params = get_query_var('params') ?>
+<!-- <?= print_r($params, true) ?> -->
 <? get_header() ?>
 
-<div style="display:block; width: 500px; margin: auto; text-align: center;">
+<div style="display:block; width: 500px; margin: auto; text-align: center;" class="theme-<?= $params['theme'] ?>">
 	<h1>Cryptomus Payment Gateway</h1>
 	<div>
 		<p><span>Amount: </span><span><?= $params['order_amount'] ?> <?= $params['order_currency'] ?></span></p>
@@ -18,9 +19,7 @@
 	    <label for="to_currency">Choose a currency:</label>
 	    <select name="to_currency" id="to_currency">
 	        <? foreach ($params['currencies'] as $currency): ?>
-	            <? if ($currency['is_available']): ?>
-	                <option value="<?= $currency['currency'] ?>" data-network="<?= $currency['network'] ?>"><?= $currency['currency'] ?></option>
-	            <? endif ?>
+                <option value="<?= $currency['currency'] ?>" data-network="<?= $currency['network'] ?>"><?= $currency['currency'] ?></option>
 	        <? endforeach ?>
 	    </select>
 	    <br/><br/>
