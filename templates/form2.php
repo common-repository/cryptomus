@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (data.status) {
 				statusDisplay.textContent = data.payment_status;
 				if (["paid", "paid_over"].indexOf(data.payment_status) >= 0) {
-					window.location.href = "<?= $params['return_url'] ?>";
+					window.location.href = "<?= $params['success_url'] ?>";
 				}
 			} else {
 				statusDisplay.textContent = 'Error: ' + data.error;

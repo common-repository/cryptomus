@@ -44,7 +44,6 @@ function cryptomus_add_endpoint() {
 	add_rewrite_endpoint('cryptomus-pay', EP_ROOT);
 	flush_rewrite_rules(false);
 }
-
 add_action('init', 'cryptomus_add_endpoint');
 
 function cryptomus_template_include($template) {
@@ -52,7 +51,6 @@ function cryptomus_template_include($template) {
 	if (isset($wp_query->query_vars['cryptomus-pay'])) {
 		$gateway = new Cryptomus\Woocommerce\Gateway();
 
-		// check if h2h is enabled in the plugin settings
 		if ($gateway->h2h !== "yes") {
 			wp_redirect(home_url());
 			exit;
@@ -61,58 +59,47 @@ function cryptomus_template_include($template) {
 		$order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : null;
 		$step_id = isset($_GET['step_id']) ? intval($_GET['step_id']) : 1;
 		$order = wc_get_order($order_id);
-		$return_url = $gateway->get_return_url($order);
+		$success_url = $gateway->get_return_url($order);
+		$return_url = str_replace('/order-received/', '/order-pay/', $success_url);
+		$return_url .= '&pay_for_order=true';
 
-		if ($step_id == 1) {
-			$currencies = $gateway->request_currencies();
-			$unique_networks = [];
+		$params = [
+			'order_id' => $order_id,
+			'step_id' => $step_id,
+			'return_url' => $return_url,
+			'success_url' => $success_url,
+			'theme' => $gateway->theme,
+		];
 
-			foreach ($currencies as $currency) {
-				$unique_networks[$currency['network']] = $currency['network'];
-			}
+		switch ($step_id) {
+			case 1:
+				$params['currencies'] = $gateway->request_currencies();
+				$params['unique_networks'] = array_unique(array_column($params['currencies'], 'network'));
+				$params['order_amount'] = $order->get_total();
+				$params['order_currency'] = $order->get_currency();
+				break;
 
-			$params = [
-				'order_id' => $order_id,
-				'unique_networks' => array_keys($unique_networks),
-				'currencies' => $currencies,
-				'order_amount' => $order->get_total(),
-				'order_currency' => $order->get_currency(),
-				'theme' => $gateway->theme,
-				'return_url' => $return_url,
-			];
+			case 2:
+				$network = $_GET['network'] ?? null;
+				$to_currency = $_GET['to_currency'] ?? null;
+				$params['payment'] = $gateway->create_h2h_payment($order_id, $network, $to_currency);
+				$params['network'] = $network;
+				$params['to_currency'] = $to_currency;
+				break;
 
-			set_query_var('params', $params);
+			default:
+				break;
+		}
 
-			$new_template = plugin_dir_path(__FILE__) . 'templates/form1.php';
-			if (file_exists($new_template)) {
-				return $new_template;
-			}
-
-		} else if ($step_id == 2) {
-			$network = $_GET['network'] ?? null;
-			$to_currency = $_GET['to_currency'] ?? null;
-			$payment = $gateway->create_h2h_payment($order_id, $network, $to_currency);
-			$params = [
-				'order_id' => $order_id,
-				'payment' => $payment,
-				'network' => $network,
-				'to_currency' => $to_currency,
-				'theme' => $gateway->theme,
-				'return_url' => $return_url,
-			];
-			set_query_var('params', $params);
-			$new_template = plugin_dir_path(__FILE__) . 'templates/form2.php';
-			if (file_exists($new_template)) {
-				return $new_template;
-			}
+		set_query_var('params', $params);
+		$new_template = plugin_dir_path(__FILE__) . 'templates/form' . $step_id . '.php';
+		if (file_exists($new_template)) {
+			return $new_template;
 		}
 	}
-
 	return $template;
 }
-
 add_filter('template_include', 'cryptomus_template_include');
-
 
 function cryptomus_query_vars($vars) {
 	$vars[] = 'cryptomus-pay';
@@ -120,54 +107,38 @@ function cryptomus_query_vars($vars) {
 }
 add_filter('query_vars', 'cryptomus_query_vars');
 
+function cryptomus_webhook_callback($request) {
+	$gateway = new Cryptomus\Woocommerce\Gateway();
+	$params = $request->get_params();
 
+	if (empty($params['uuid']) || empty($params['order_id'])) {
+		return ['success' => false];
+	}
+
+	$result = $gateway->payment->info(['uuid' => $params['uuid']]);
+	if (empty($result['payment_status'])) {
+		return ['success' => false];
+	}
+
+	$order_id = $params['order_id'];
+	$order = wc_get_order($order_id);
+	$all_downloadable_or_virtual = all_items_downloadable_or_virtual($order);
+
+	$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_or_virtual));
+	$order->save();
+
+	if (PaymentStatus::isNeedReturnStocks($result['payment_status'], $all_downloadable_or_virtual)) {
+		wc_increase_stock_levels($order);
+	}
+
+	return ['success' => true];
+}
 add_action('rest_api_init', function () {
 	$gateway = new Cryptomus\Woocommerce\Gateway();
 	register_rest_route('cryptomus-webhook', $gateway->merchant_uuid, array(
 		'methods' => 'POST',
-		'permission_callback' => function() {
-			return true;
-		},
-		'callback' => function ($request) use ($gateway) {
-			$params = $request->get_params();
-			if (empty($params['uuid']) || empty($params['order_id'])) {
-				return ['success' => false];
-			}
-
-			$result = $gateway->payment->info(['uuid' => $params['uuid']]);
-			if (empty($result['payment_status'])) {
-				return ['success' => false];
-			}
-
-			$order = wc_get_order($params['order_id']);
-
-			$items = $order->get_items();
-			$all_downloadable_or_virtual = true;
-			foreach ($items as $item) {
-				$product = $item->get_product();
-				if (!($product->is_virtual() || $product->is_downloadable())) {
-					$all_downloadable_or_virtual = false;
-					break;
-				}
-			}
-
-			$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_or_virtual));
-			$order->save();
-
-			if (PaymentStatus::isNeedReturnStocks($result['payment_status'])) {
-				wc_increase_stock_levels($order);
-			}
-
-			return ['success' => true];
-		}
-	));
-});
-
-add_action('rest_api_init', function () {
-	register_rest_route('cryptomus-pay', '/check-status', array(
-		'methods' => 'POST',
-		'callback' => 'check_payment_status',
-		'permission_callback' => '__return_true'
+		'permission_callback' => '__return_true',
+		'callback' => 'cryptomus_webhook_callback',
 	));
 });
 
@@ -178,18 +149,8 @@ function check_payment_status(WP_REST_Request $request) {
 	}
 	$gateway = new Cryptomus\Woocommerce\Gateway();
 	$result = $gateway->payment->info(['order_id' => $order_id]);
-	$result['payment_status'] = 'paid';
-
 	$order = wc_get_order(end(explode('_', $order_id)));
-	$items = $order->get_items();
-	$all_downloadable_or_virtual = true;
-	foreach ($items as $item) {
-		$product = $item->get_product();
-		if (!($product->is_virtual() || $product->is_downloadable())) {
-			$all_downloadable_or_virtual = false;
-			break;
-		}
-	}
+	$all_downloadable_or_virtual = all_items_downloadable_or_virtual($order);
 
 	$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_or_virtual));
 	$order->save();
@@ -200,11 +161,28 @@ function check_payment_status(WP_REST_Request $request) {
 
 	return new WP_REST_Response($result, 200);
 }
+add_action('rest_api_init', function () {
+	register_rest_route('cryptomus-pay', '/check-status', array(
+		'methods' => 'POST',
+		'callback' => 'check_payment_status',
+		'permission_callback' => '__return_true',
+	));
+});
 
-// custom js for handle checkbox behaviour on the plugin settings page
 function plugin_enqueue_admin_scripts($hook) {
 	if (isset($_GET['page']) && $_GET['page'] === 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] === 'checkout' && isset($_GET['section']) && $_GET['section'] === 'cryptomus') {
 		wp_enqueue_script('plugin-admin-script', plugins_url('js/plugin-admin.js', __FILE__), array('jquery'), null, true);
 	}
 }
 add_action('admin_enqueue_scripts', 'plugin_enqueue_admin_scripts');
+
+function all_items_downloadable_or_virtual($order) {
+	$items = $order->get_items();
+	foreach ($items as $item) {
+		$product = $item->get_product();
+		if (!($product->is_virtual() || $product->is_downloadable())) {
+			return false;
+		}
+	}
+	return true;
+}

@@ -284,11 +284,15 @@ final class Gateway extends WC_Payment_Gateway
             wc_reduce_stock_levels($order_id);
             WC()->cart->empty_cart();
             try {
+                $success_url = $this->get_return_url($order);
+                $return_url = str_replace('/order-received/', '/order-pay/', $success_url);
+                $return_url .= '&pay_for_order=true';
                 $payment = $this->payment->create([
                     'amount' => $order->get_total(),
                     'currency' => $order->get_currency(),
                     'order_id' => (string)$order_id,
-                    'url_return' => $this->get_return_url($order),
+                    'url_return' => $return_url,
+                    'url_success' => $success_url,
                     'url_callback' => get_site_url(null, "wp-json/cryptomus-webhook/$this->merchant_uuid"),
                     'is_payment_multiple' => true,
                     'lifetime' => (int)$this->lifetime * 3600,
@@ -307,11 +311,16 @@ final class Gateway extends WC_Payment_Gateway
     public function create_h2h_payment($order_id, $network, $to_currency) {
         $order = wc_get_order($order_id);
         try {
+            $success_url = $this->get_return_url($order);
+            $return_url = str_replace('/order-received/', '/order-pay/', $success_url);
+            $return_url .= '&pay_for_order=true';
+
             $payment = $this->payment->create([
                 'amount' => $order->get_total(),
                 'currency' => $order->get_currency(),
                 'order_id' => 'woo_h2h_'.$network.'_'.$to_currency.'_'.(string)$order_id,
-                'url_return' => $this->get_return_url($order),
+                'url_return' => $return_url,
+                'url_success' => $success_url,
                 'url_callback' => get_site_url(null, "wp-json/cryptomus-webhook/$this->merchant_uuid"),
                 'is_payment_multiple' => true,
                 'lifetime' => (int)$this->lifetime * 3600,
