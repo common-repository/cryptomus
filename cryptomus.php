@@ -3,7 +3,7 @@
  * Plugin Name: Cryptomus
  * Plugin URI: https://doc.cryptomus.com
  * Description: Cryptomus allows you to accept cryptocurrency payments worldwide without any restrictions. To start accepting payments all you need to do is register on the platform and issue an API key.
- * Version: 1.2.6
+ * Version: 1.3.0
  * Author: Cryptomus.com
  * Author URI: https://app.cryptomus.com/
  * Developer: Cryptomus
@@ -40,13 +40,11 @@ add_filter('wc_order_statuses', function ($statuses) {
 	return $statuses;
 });
 
-// Функция для регистрации нового endpoint
 function cryptomus_add_endpoint() {
 	add_rewrite_endpoint('cryptomus-pay', EP_ROOT);
-	flush_rewrite_rules(false);  // Используйте это только для отладки!
+	flush_rewrite_rules(false);
 }
 
-// Добавление функции регистрации endpoint к хуку init
 add_action('init', 'cryptomus_add_endpoint');
 
 function cryptomus_template_include($template) {
@@ -54,7 +52,7 @@ function cryptomus_template_include($template) {
 	if (isset($wp_query->query_vars['cryptomus-pay'])) {
 		$gateway = new Cryptomus\Woocommerce\Gateway();
 
-		// Проверяем, что h2h включен в админке. Иначе на главную
+		// check if h2h is enabled in the plugin settings
 		if ($gateway->h2h !== "yes") {
 			wp_redirect(home_url());
 			exit;
@@ -203,11 +201,10 @@ function check_payment_status(WP_REST_Request $request) {
 	return new WP_REST_Response($result, 200);
 }
 
-// Подключение JavaScript файла на странице настроек плагина
+// custom js for handle checkbox behaviour on the plugin settings page
 function plugin_enqueue_admin_scripts($hook) {
-    // Проверяем, находится ли административная страница настроек вашего плагина
-    if (isset($_GET['page']) && $_GET['page'] === 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] === 'checkout' && isset($_GET['section']) && $_GET['section'] === 'cryptomus') {
-        wp_enqueue_script('plugin-admin-script', plugins_url('js/plugin-admin.js', __FILE__), array('jquery'), null, true);
-    }
+	if (isset($_GET['page']) && $_GET['page'] === 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] === 'checkout' && isset($_GET['section']) && $_GET['section'] === 'cryptomus') {
+		wp_enqueue_script('plugin-admin-script', plugins_url('js/plugin-admin.js', __FILE__), array('jquery'), null, true);
+	}
 }
 add_action('admin_enqueue_scripts', 'plugin_enqueue_admin_scripts');

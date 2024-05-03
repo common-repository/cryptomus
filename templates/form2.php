@@ -1,5 +1,4 @@
 <? $params = get_query_var('params') ?>
-<!-- <?= print_r($params, true) ?> -->
 <? get_header(); ?>
 
 <div style="display:block; width: 500px; margin: auto; text-align: center;" class="theme-<?= $params['theme'] ?>">
@@ -40,7 +39,7 @@
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {
 	var orderId = document.getElementById('orderIdInput').value;
-	var expiredAtUnix = <?= $params['payment']['expired_at'] ?>; // Получаем время в формате Unix из PHP
+	var expiredAtUnix = <?= $params['payment']['expired_at'] ?>;
 	var timerDisplay = document.getElementById('timerDisplay');
 	var statusDisplay = document.getElementById('statusDisplay');
 
@@ -55,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function updateTimer() {
-		var currentTimeUnix = Math.floor(Date.now() / 1000); // Получаем текущее время в формате Unix
+		var currentTimeUnix = Math.floor(Date.now() / 1000);
 		var remainingTime = expiredAtUnix - currentTimeUnix;
 		if (remainingTime <= 0) {
 			clearInterval(timerInterval);
@@ -82,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (["paid", "paid_over"].indexOf(data.payment_status) >= 0) {
 					window.location.href = "<?= $params['return_url'] ?>";
 				}
-				// alert(data.status);
 			} else {
 				statusDisplay.textContent = 'Error: ' + data.error;
 			}
