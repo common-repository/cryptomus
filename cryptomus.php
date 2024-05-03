@@ -63,6 +63,7 @@ function cryptomus_template_include($template) {
 		$order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : null;
 		$step_id = isset($_GET['step_id']) ? intval($_GET['step_id']) : 1;
 		$order = wc_get_order($order_id);
+		$return_url = $gateway->get_return_url($order);
 
 		if ($step_id == 1) {
 			$currencies = $gateway->request_currencies();
@@ -79,6 +80,7 @@ function cryptomus_template_include($template) {
 				'order_amount' => $order->get_total(),
 				'order_currency' => $order->get_currency(),
 				'theme' => $gateway->theme,
+				'return_url' => $return_url,
 			];
 
 			set_query_var('params', $params);
@@ -98,6 +100,7 @@ function cryptomus_template_include($template) {
 				'network' => $network,
 				'to_currency' => $to_currency,
 				'theme' => $gateway->theme,
+				'return_url' => $return_url,
 			];
 			set_query_var('params', $params);
 			$new_template = plugin_dir_path(__FILE__) . 'templates/form2.php';
@@ -177,6 +180,26 @@ function check_payment_status(WP_REST_Request $request) {
 	}
 	$gateway = new Cryptomus\Woocommerce\Gateway();
 	$result = $gateway->payment->info(['order_id' => $order_id]);
+	$result['payment_status'] = 'paid';
+
+	$order = wc_get_order(end(explode('_', $order_id)));
+	$items = $order->get_items();
+	$all_downloadable_or_virtual = true;
+	foreach ($items as $item) {
+		$product = $item->get_product();
+		if (!($product->is_virtual() || $product->is_downloadable())) {
+			$all_downloadable_or_virtual = false;
+			break;
+		}
+	}
+
+	$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_or_virtual));
+	$order->save();
+
+	if (PaymentStatus::isNeedReturnStocks($result['payment_status'], $all_downloadable_or_virtual)) {
+		wc_increase_stock_levels($order);
+	}
+
 	return new WP_REST_Response($result, 200);
 }
 

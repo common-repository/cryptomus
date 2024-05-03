@@ -1,4 +1,5 @@
 <? $params = get_query_var('params') ?>
+<!-- <?= print_r($params, true) ?> -->
 <? get_header(); ?>
 
 <div style="display:block; width: 500px; margin: auto; text-align: center;" class="theme-<?= $params['theme'] ?>">
@@ -18,7 +19,7 @@
 	</div>
 	<div>
 		<p>Status</p>
-		<p><?= $params['payment']['status'] ?></p>
+		<p id="statusDisplay"><?= $params['payment']['status'] ?></p>
 	</div>
 	<div>
 		<p>Invoice expiring at</p>
@@ -32,6 +33,7 @@
 	<img src="<?= $params['payment']['address_qr_code'] ?>" />
 	<br/>
 	<input type="button" value="Check Status Manually" id="checkStatusButton"/>
+	<a href="<?= $params['return_url'] ?>">Return to order</a>
 	<br/><br/>
 </div>
 
@@ -40,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var orderId = document.getElementById('orderIdInput').value;
 	var expiredAtUnix = <?= $params['payment']['expired_at'] ?>; // Получаем время в формате Unix из PHP
 	var timerDisplay = document.getElementById('timerDisplay');
+	var statusDisplay = document.getElementById('statusDisplay');
 
 	function formatTime(seconds) {
 		var hours = Math.floor(seconds / 3600);
@@ -75,9 +78,13 @@ document.addEventListener('DOMContentLoaded', function() {
 		.then(response => response.json())
 		.then(data => {
 			if (data.status) {
-				alert('Status of the order: ' + data.status);
+				statusDisplay.textContent = data.payment_status;
+				if (["paid", "paid_over"].indexOf(data.payment_status) >= 0) {
+					window.location.href = "<?= $params['return_url'] ?>";
+				}
+				// alert(data.status);
 			} else {
-				alert('Error: ' + data.error);
+				statusDisplay.textContent = 'Error: ' + data.error;
 			}
 		})
 		.catch(error => console.error('Error:', error));

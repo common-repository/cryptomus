@@ -74,9 +74,9 @@ final class PaymentStatus
         return $result;
     }
 
-    public static function isNeedReturnStocks($status)
+    public static function isNeedReturnStocks($status, $all_downloadable_or_virtual)
     {
-        $status = self::convertToWoocommerceStatus($status);
+        $status = self::convertToWoocommerceStatus($status, $all_downloadable_or_virtual);
 
         if ($status === self::WC_STATUS_CANCELED || $status === self::WC_STATUS_FAIL) {
             return true;

@@ -24,6 +24,7 @@
 	    </select>
 	    <br/><br/>
 	    <button type="submit">Pay Now</button>
+    	<a href="<?= $params['return_url'] ?>">Return to order</a>
 	</form>
 	<br/><br/>
 </div>
