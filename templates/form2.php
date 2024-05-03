@@ -22,7 +22,7 @@
 	</div>
 	<div>
 		<p>Invoice expiring at</p>
-		<p><?= $params['payment']['expired_at'] ?></p>
+		<p id="timerDisplay"></p>
 	</div>
 	<div>
 		<p>Address</p>
@@ -30,38 +30,71 @@
 	</div>
 
 	<img src="<?= $params['payment']['address_qr_code'] ?>" />
-	<input type="button" value="check status" id="checkStatusButton"/>
-<!-- 	<pre>
-		<?= $params['network'] ?>
-		<?= $params['to_currency'] ?>
-		<?= "\n" ?>
-		<?= print_r($params['payment'], true) ?>
-	</pre>
- -->
+	<br/>
+	<input type="button" value="Check Status Manually" id="checkStatusButton"/>
+	<br/><br/>
 </div>
 
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('checkStatusButton').addEventListener('click', function() {
-        var orderId = document.getElementById('orderIdInput').value;
+	var orderId = document.getElementById('orderIdInput').value;
+	var expiredAtUnix = <?= $params['payment']['expired_at'] ?>; // Получаем время в формате Unix из PHP
+	var timerDisplay = document.getElementById('timerDisplay');
 
-        fetch('/wp-json/cryptomus-pay/check-status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ order_id: orderId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status) {
-                alert('Status of the order: ' + data.status);
-            } else {
-                alert('Error: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+	function formatTime(seconds) {
+		var hours = Math.floor(seconds / 3600);
+		var minutes = Math.floor((seconds % 3600) / 60);
+		var remainingSeconds = seconds % 60;
+
+		return hours.toString().padStart(2, '0') + ':' +
+			   minutes.toString().padStart(2, '0') + ':' +
+			   remainingSeconds.toString().padStart(2, '0');
+	}
+
+	function updateTimer() {
+		var currentTimeUnix = Math.floor(Date.now() / 1000); // Получаем текущее время в формате Unix
+		var remainingTime = expiredAtUnix - currentTimeUnix;
+		if (remainingTime <= 0) {
+			clearInterval(timerInterval);
+			timerDisplay.textContent = 'Expired';
+		} else {
+			timerDisplay.textContent = formatTime(remainingTime);
+		}
+	}
+	var timerInterval = setInterval(updateTimer, 1000);
+	updateTimer();
+
+	function checkOrderStatus() {
+		fetch('/wp-json/cryptomus-pay/check-status', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ order_id: orderId })
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.status) {
+				alert('Status of the order: ' + data.status);
+			} else {
+				alert('Error: ' + data.error);
+			}
+		})
+		.catch(error => console.error('Error:', error));
+	}
+
+	checkOrderStatus();
+
+	var intervalId = setInterval(checkOrderStatus, 60 * 1000);
+
+	document.getElementById('checkStatusButton').addEventListener('click', function() {
+		checkOrderStatus();
+	});
+
+	window.addEventListener('beforeunload', function() {
+		clearInterval(intervalId);
+	});
 });
+
 </script>
 <? get_footer(); ?>
