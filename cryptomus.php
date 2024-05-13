@@ -74,7 +74,8 @@ function cryptomus_template_include($template) {
 		switch ($step_id) {
 			case 1:
 				$params['currencies'] = $gateway->request_currencies();
-				$params['unique_networks'] = array_unique(array_column($params['currencies'], 'network'));
+				$params['unique_coins'] = array_unique(array_column($params['currencies'], 'currency'));
+				sort($params['unique_coins']);
 				$params['order_amount'] = $order->get_total();
 				$params['order_currency'] = $order->get_currency();
 				break;
@@ -92,7 +93,7 @@ function cryptomus_template_include($template) {
 		}
 
 		set_query_var('params', $params);
-		$new_template = plugin_dir_path(__FILE__) . 'templates/form' . $step_id . '.php';
+		$new_template = plugin_dir_path(__FILE__) . 'templates/form_' . $step_id . '.php';
 		if (file_exists($new_template)) {
 			return $new_template;
 		}
