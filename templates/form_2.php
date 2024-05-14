@@ -8,12 +8,10 @@
 			font-family: 'Roboto', sans-serif;
 			background-color: #889; /* Темный фон */
 			color: #fff; /* Белый текст */
-			margin: 0;
-			padding: 20px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			height: 100vh;
+			height: 900px;
 		}
 
 		.cryptomus-payment-form {
@@ -21,18 +19,26 @@
 			padding: 20px;
 			border-radius: 15px;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			width: 524px;
-			height: 665px;
+			width: 550px;
+			height: 780px;
 			font-size: 14px;
 		}
 
-		.cryptomus-form-information p,
-		.cryptomus-form-address p {
+		.cryptomus-form-information p{
+			font-weight: 600;
+			font-size: 20px;
+			margin-top: 20px;
+			margin-right: 40px;
+			margin-left: 40px;
+			margin-bottom: 0px;
+			color: #fff; /* Белый текст */
+		}
+		.cryptomus-form-address p{
 			font-weight: 600;
 			margin-top: 20px;
 			margin-right: 40px;
 			margin-left: 40px;
-			margin-bottom: -20px;
+			margin-bottom: -5px;
 			color: #fff; /* Белый текст */
 		}
 
@@ -52,7 +58,7 @@
 		.cryptomus-form-element p {
 			font-size: 14px;
 			font-weight: 300;
-			margin-bottom: -10px;
+			margin-bottom: 0px;
 			color: #999; /* Серый текст */
 		}
 
@@ -93,8 +99,8 @@
 		}
 
 		.cryptomus-form-qr {
-			width: 280px;
-			height: 280px;
+			width: 185px;
+			height: 185px;
 			border-radius: 25px;
 			background-color: white;
 			margin: auto;
@@ -129,7 +135,7 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			height: 100vh;
+			height: 900px;
 		}
 
 		.cryptomus-payment-form {
@@ -137,17 +143,19 @@
 			padding: 20px;
 			border-radius: 15px;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			width: 524px;
-			height: 665px;
+			width: 550px;
+			height: 780px;
 			font-size: 14px;
 		}
 
-		.cryptomus-form-information p {
+		.cryptomus-form-information p{
 			font-weight: 600;
+			font-size: 20px;
 			margin-top: 20px;
 			margin-right: 40px;
 			margin-left: 40px;
-			margin-bottom: -20px;
+			margin-bottom: 0px;
+			color: black;
 		}
 
 		.cryptomus-form-information h1 {
@@ -165,7 +173,7 @@
 		.cryptomus-form-element p {
 			font-size: 14px;
 			font-weight: 300;
-			margin-bottom: -10px;
+			margin-bottom: 0px;
 			color: #666666;
 		}
 
@@ -189,7 +197,7 @@
 			font-size: 14px;
 			font-weight: 300;
 			color: #666666;
-			margin-bottom: -10px;
+			margin-bottom: -2px;
 		}
 
 		.cryptomus-form-address span {
@@ -199,8 +207,8 @@
 		}
 
 		.cryptomus-form-qr {
-			width: 280px;
-			height: 280px;
+			width: 185px;
+			height: 185px;
 			border-radius: 25px;
 			margin: auto;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

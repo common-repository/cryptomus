@@ -170,10 +170,12 @@ final class Gateway extends WC_Payment_Gateway
             ],
             'theme' => [
                 'title' => 'Theme',
+                'description' => 'If you select "Custom" theme the /wp-content/plugins/cryptomus/templates/custom/ template will be used. Change it carefully. Do not change names of the forms fields',
                 'type' => 'select',
                 'options' => [
                     'light' => 'Light',
                     'dark' => 'Dark',
+                    'custom' => 'Custom',
                 ]
             ],
             'accepted_networks' => [

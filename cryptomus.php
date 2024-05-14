@@ -3,7 +3,7 @@
  * Plugin Name: Cryptomus
  * Plugin URI: https://doc.cryptomus.com
  * Description: Cryptomus allows you to accept cryptocurrency payments worldwide without any restrictions. To start accepting payments all you need to do is register on the platform and issue an API key.
- * Version: 1.3.2
+ * Version: 1.3.3
  * Author: Cryptomus.com
  * Author URI: https://app.cryptomus.com/
  * Developer: Cryptomus
@@ -93,7 +93,7 @@ function cryptomus_template_include($template) {
 		}
 
 		set_query_var('params', $params);
-		$new_template = plugin_dir_path(__FILE__) . 'templates/form_' . $step_id . '.php';
+		$new_template = plugin_dir_path(__FILE__) . 'templates/' . ($params['theme'] === 'custom' ? 'custom/': '') . 'form_' . $step_id . '.php';
 		if (file_exists($new_template)) {
 			return $new_template;
 		}

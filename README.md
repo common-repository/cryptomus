@@ -4,7 +4,7 @@ Tags: crypto, trc20, crypto payment, cryptocurrency, bitcoin payment
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 5.6
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,7 @@ We have created an intuitive interface and flexible functionality to provide use
 
 
 == It's important for us ==
-Write reviews and rate our plugin. It's important for us! 
+Write reviews and rate our plugin. It's important for us!
 If you encounter any difficulties, you can always contact our [support service](https://t.me/cryptomus_complaints).
 
 
@@ -46,7 +46,7 @@ To learn about other features, please visit our [website](https://cryptomus.com/
 * High level of security
 * Customer care. Our support is active 24/7
 
-Setup the Cryptomus Wordpress plugin today to start accepting cryptocurrency payments at your website with ease. 
+Setup the Cryptomus Wordpress plugin today to start accepting cryptocurrency payments at your website with ease.
 
 
 == The client's path while using the Cryptomus plugin ==
@@ -75,19 +75,19 @@ Telegram channel: [Telegram](https://t.me/cryptomus_com)
 Logo Guidelines: [Brand-Guideline](https://cryptomus.com/brand-guideline/?utm_source=wordpress&utm_medium=plugin-description)
 
 
-Any questions left? Contact our [support team](https://t.me/cryptomussupport).			
+Any questions left? Contact our [support team](https://t.me/cryptomussupport).
 
 
 == Installation ==
- 
+
 == Upgrade Notice ==
- 
+
 == Screenshots ==
  1. Accept Payments in Cryptocurrencies for WooCommerce.
  2. The customer's journey when paying with Cryptomus.
 
 == Changelog ==
- 
+
 == Frequently Asked Questions ==
- 
+
 

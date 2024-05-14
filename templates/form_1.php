@@ -9,11 +9,11 @@
 			background-color: #1c1c1c; /* Темный фон */
 			color: #fff; /* Белый текст */
 			margin: 0;
-			padding: 20px;
+			padding: -20px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			height: 100vh;
+			height: 700px;
 		}
 
 		.cryptomus-payment-form {
@@ -21,13 +21,22 @@
 			padding: 20px;
 			border-radius: 15px;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			width: 524px;
-			height: 400px;
+			width: 550px;
+			height: 430px;
 			font-size: 14px;
 		}
 
 		.cryptomus-form-element {
 			margin-bottom: 20px;
+
+		}
+		.cryptomus-form-element p {
+			padding-bottom: 20px;
+		}
+		.cryptomus-form-element span {
+			padding-top: 20px;
+			margin-top: 20px;
+			color: white;
 		}
 
 		.cryptomus-payment-form label {
@@ -96,7 +105,7 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			height: 100vh;
+			height: 700px;
 		}
 
 		.cryptomus-payment-form {
@@ -104,13 +113,21 @@
 			padding: 20px;
 			border-radius: 15px;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			width: 524px;
-			height: 400px;
+			width: 550px;
+			height: 430px;
 			font-size: 14px;
 		}
 
 		.cryptomus-form-element {
 			margin-bottom: 20px;
+		}
+		.cryptomus-form-element p {
+			padding-bottom: 20px;
+		}
+		.cryptomus-form-element span {
+			padding-top: 20px;
+			margin-top: 20px;
+			color: black;
 		}
 
 		.cryptomus-payment-form label {
