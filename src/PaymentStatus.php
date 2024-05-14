@@ -31,7 +31,7 @@ final class PaymentStatus
      * @param $status
      * @return string
      */
-    public static function convertToWoocommerceStatus($status, $all_downloadable_or_virtual)
+    public static function convertToWoocommerceStatus($status, $all_downloadable_and_virtual)
     {
         switch ($status) {
             case self::PAYMENT_STATUS_PROCESS:
@@ -68,15 +68,15 @@ final class PaymentStatus
             default:
                 $result = self::WC_STATUS_HOLD;
         }
-        if ($all_downloadable_or_virtual && $result === self::WC_STATUS_PROCESSING) {
+        if ($all_downloadable_and_virtual && $result === self::WC_STATUS_PROCESSING) {
             $result = self::WC_STATUS_COMPLETED;
         }
         return $result;
     }
 
-    public static function isNeedReturnStocks($status, $all_downloadable_or_virtual)
+    public static function isNeedReturnStocks($status, $all_downloadable_and_virtual)
     {
-        $status = self::convertToWoocommerceStatus($status, $all_downloadable_or_virtual);
+        $status = self::convertToWoocommerceStatus($status, $all_downloadable_and_virtual);
 
         if ($status === self::WC_STATUS_CANCELED || $status === self::WC_STATUS_FAIL) {
             return true;

@@ -3,7 +3,7 @@
  * Plugin Name: Cryptomus
  * Plugin URI: https://doc.cryptomus.com
  * Description: Cryptomus allows you to accept cryptocurrency payments worldwide without any restrictions. To start accepting payments all you need to do is register on the platform and issue an API key.
- * Version: 1.3.0
+ * Version: 1.3.2
  * Author: Cryptomus.com
  * Author URI: https://app.cryptomus.com/
  * Developer: Cryptomus
@@ -123,12 +123,12 @@ function cryptomus_webhook_callback($request) {
 
 	$order_id = $params['order_id'];
 	$order = wc_get_order($order_id);
-	$all_downloadable_or_virtual = all_items_downloadable_or_virtual($order);
+	$all_downloadable_and_virtual = all_items_downloadable_and_virtual($order);
 
-	$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_or_virtual));
+	$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_and_virtual));
 	$order->save();
 
-	if (PaymentStatus::isNeedReturnStocks($result['payment_status'], $all_downloadable_or_virtual)) {
+	if (PaymentStatus::isNeedReturnStocks($result['payment_status'], $all_downloadable_and_virtual)) {
 		wc_increase_stock_levels($order);
 	}
 
@@ -151,12 +151,12 @@ function check_payment_status(WP_REST_Request $request) {
 	$gateway = new Cryptomus\Woocommerce\Gateway();
 	$result = $gateway->payment->info(['order_id' => $order_id]);
 	$order = wc_get_order(end(explode('_', $order_id)));
-	$all_downloadable_or_virtual = all_items_downloadable_or_virtual($order);
+	$all_downloadable_and_virtual = all_items_downloadable_and_virtual($order);
 
-	$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_or_virtual));
+	$order->set_status(PaymentStatus::convertToWoocommerceStatus($result['payment_status'], $all_downloadable_and_virtual));
 	$order->save();
 
-	if (PaymentStatus::isNeedReturnStocks($result['payment_status'], $all_downloadable_or_virtual)) {
+	if (PaymentStatus::isNeedReturnStocks($result['payment_status'], $all_downloadable_and_virtual)) {
 		wc_increase_stock_levels($order);
 	}
 
@@ -177,11 +177,11 @@ function plugin_enqueue_admin_scripts($hook) {
 }
 add_action('admin_enqueue_scripts', 'plugin_enqueue_admin_scripts');
 
-function all_items_downloadable_or_virtual($order) {
+function all_items_downloadable_and_virtual($order) {
 	$items = $order->get_items();
 	foreach ($items as $item) {
 		$product = $item->get_product();
-		if (!($product->is_virtual() || $product->is_downloadable())) {
+		if (!($product->is_virtual() && $product->is_downloadable())) {
 			return false;
 		}
 	}
