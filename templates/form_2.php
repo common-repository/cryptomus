@@ -6,7 +6,7 @@
 	<style>
 		.cryptomus-flex-column {
 			font-family: 'Roboto', sans-serif;
-			background-color: #889; /* Темный фон */
+			background-color: #1c1c1c; /* Темный фон */
 			color: #fff; /* Белый текст */
 			display: flex;
 			justify-content: center;

@@ -1,93 +1,152 @@
-=== Woocommerce crypto payments || Cryptomus Payment Plugin ===
+=== Bitcoin Payment Gateway: Accept Crypto Payments with WooCommerce ===
 Contributors: Cryptomus
-Tags: crypto, trc20, crypto payment, cryptocurrency, bitcoin payment
-Requires at least: 5.8
-Tested up to: 6.4
+Tags: crypto payment gateway, bitcoin payment gateway, crypto payments, bitcoin payments, accept crypto
+Requires at least: 5.2
+Tested up to: 6.5
 Requires PHP: 5.6
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Cryptomus the most convenient WooCommerce crypto payments for your business. Accept crypto payments with us.
+Secure crypto payment plugin for WordPress
+
 == Description ==
-Expand the payment options for your customers in a modern and convenient way with WooCommerce crypto plugin from Cryptomus! Accept payments in over 15 different cryptocurrencies, giving customers unlimited freedom of choice.
+Cryptomus is a cryptocurrency payment platform for businesses and individuals. Accepting cryptocurrency payments for your online business is now easier than ever with the Cryptomus cryptocurrency payment processor plugin for WordPress. With the help of it, cryptocurrency options are being converted to fiat at current exchange rates.
 
-With Cryptomus, everyone can easily pay for purchases with cryptocurrency using their personal wallet and without wasting much time on registration.
+Cryptomus plugin allows you to accept the following coins:
 
-We have created an intuitive interface and flexible functionality to provide users with high speed and ease of operation of our plugin.
+* Bitcoin (BTC)
+* Tether (USDT TRC-20 & ERC-20)
+* Avalanche (AVAX)
+* Bitcoin Cash (BCH)
+* Binance USD (BUSD)
+* Dash (DASH)
+* Dogecoin (DOGE)
+* Ethereum (ETH)
+* Litecoin (LTC)
+* Polygon (MATIC)
+* Shiba Inu (SHIB)
+* Solana (SOL)
+* Monero (XMR)
+* TRON (TRX)
+* USD Coin (USDC)
+
+…and many more crypto assets.
+
 
 [Cryptomus website](https://cryptomus.com/?utm_source=wordpress&utm_medium=plugin-description) | [Sign up](https://app.cryptomus.com/?utm_source=wordpress&utm_medium=plugin-description) | [Contact us](https://t.me/cryptomussupport) | [Platform Overview](https://www.youtube.com/watch?v=MqdfrZgfoBo&t)
 
+= Features of WooCommerce Bitcoin & Crypto payment Gateway by Cryptomus =
 
-== It's important for us ==
-Write reviews and rate our plugin. It's important for us!
-If you encounter any difficulties, you can always contact our [support service](https://t.me/cryptomus_complaints).
+* Fast crypto payments: It only takes a few minutes to complete a transaction, try it yourself!
 
+* Auto-withdrawal: Set the desired time interval and your funds will be automatically withdrawn.
 
-== Сryptomus Plugin Features ==
+* White label: Want to keep it squeaky clean? There is a White label feature. We will provide you with a blank payment page with your logo on it.
 
-* **Fast cryptocurrency payments.** Transactions take only a few minutes.
-* **Convenient conversion.** It is possible to enter the price in your preferred fiat currency. The further amount in cryptocurrency will be automatically calculated in real time based on the current exchange rates.
-* **The economical choice.** The transaction fee ranges from 0.4% to 2%, without periodic or installation fees.
-* **Support for popular digital currencies**. USDT/ETH/BTC/LTC and many other cryptocurrencies are available. If you haven't found the desired coin, you can leave a request in your personal account.
-* **Automatic output function.** Set the required time interval and your funds will be withdrawn automatically.
-* **A simple interface** that will be understandable to everyone.
-* **Reliable customer support service** which is available around the clock and always ready to help you in case of difficulties.
+* Total anonymity: This is our thing - you don't even need an email or phone number to sign up. The process itself takes less than a minute - just authorise using TonKeeper, MetaMask or Trust Wallet. Isn't that great?
+
+* User-friendly interface: Even a newbie will understand everything intuitively with our minimalist interface.
+
+* Security: Without a doubt, security is key. That's why we made Cryptomus so secure - use everything you need to sleep soundly.
+
+* We work with almost all major currencies. BTC, USDC, TRX - it's up to you what you want to use.
+
+* Customer support service: Our support team works around the clock to be able to help you anytime.
+
 
 To learn about other features, please visit our [website](https://cryptomus.com/?utm_source=wordpress&utm_medium=plugin-description) and [sign up](https://app.cryptomus.com/?utm_source=wordpress&utm_medium=plugin-description)
 
+= Accept Bitcoin Payments =
 
-== Why do people choose Cryptomus ==
+Allow customers to pay Bitcoin invoices, the original and most widely recognized cryptocurrency, known for its robust blockchain technology and widespread acceptance.
+
+= Accept USDT Payments =
+
+Enable payments using USDT (Tether), a stablecoin that aims to maintain a 1:1 value ratio with the US dollar, offering minimal volatility compared to other cryptocurrencies.
+
+= Accept Ethereum Payments =
+
+Include Ethereum as a payment method, a popular cryptocurrency that not only supports transactions, but also enables smart contracts and decentralized applications on its network.
+
+= Accept BCH Payments =
+
+Accept Bitcoin Cash, a fork of Bitcoin that offers faster transaction times and lower fees, making it suitable for everyday transactions.
+
+= Accept Dash Payments =
+
+Offer Dash for payments, a cryptocurrency designed for fast, low-cost transactions with added features such as optional privacy and instant transfers.
+
+
+
+= Why choose Cryptomus =
 
 * No hidden fees
-* Wide availability of the platform in all countries of the world
-* Support for over 15 popular cryptocurrencies.
-* P2P transactions without commission
-* High level of security
-* Customer care. Our support is active 24/7
-
-Setup the Cryptomus Wordpress plugin today to start accepting cryptocurrency payments at your website with ease.
+* Available in all countries worldwide
+* More than 20 coins supported 
+* Fast and secure transactions
 
 
-== The client's path while using the Cryptomus plugin ==
+= A step-by-step guide to installing a crypto payment plugin on WooCommerce =
 
-1. The client chooses Cryptomus as the payment method.
-2. Next, he goes to the payment page, where the client can select the coin and network he needs to make the transaction. It is given 3 hours to pay for a specific invoice.
-3. The confirmation page will appear as soon as the transaction is approved.
-
-
-== Quick plugin setup ==
-
-1. Go to the "Plugins" section —> click "Add New" on the WordPress administration page.
+1. Navigate to Plugins > Add New on your WordPress admin page.
 2. Install and activate the Cryptomus plugin.
-3. Get a PublicKey on the Cryptomus control panel.
-4. Save the key in the payment settings.
-5. That’s it! The plugin is configured!
-
-For more details on installing the plugin, read [here](https://cryptomus.com/blog/how-to-accept-crypto-on-your-wordpress-website-with-woocommerce-payment-plugin/?utm_source=wordpress&utm_medium=plugin-description).
-
-== Useful resources ==
-
-Official website: [Cryptomus](https://cryptomus.com/?utm_source=wordpress&utm_medium=plugin-description)
-
-Telegram channel: [Telegram](https://t.me/cryptomus_com)
-
-Logo Guidelines: [Brand-Guideline](https://cryptomus.com/brand-guideline/?utm_source=wordpress&utm_medium=plugin-description)
+3. Get the PublicKey from your Cryptomus merchant dashboard.
+4. Save the key in your Cryptomus payment settings, you're ready to go.
 
 
-Any questions left? Contact our [support team](https://t.me/cryptomussupport).
+= Security considerations for crypto payments on WordPress =
+
+When integrating cryptocurrency payments into a WordPress site, security should be a paramount concern due to the irreversible nature of crypto transactions and their attractiveness to cyber criminals. 
+
+
+It's important to use reputable crypto payment gateways that offer secure transaction processing. Regular updates to your WordPress site, plugins and themes are critical to patching vulnerabilities. 
+
+
+
+= FAQ =
+
+* How does the WooCommerce crypto payment gateway plugin work?
+The WooCommerce crypto payment gateway plugin allows e-commerce sites on WordPress to accept cryptocurrency as payment. Once installed and activated, the plugin integrates with WooCommerce and allows various cryptocurrencies to be added as payment options at checkout. 
+
+
+* Merchants can configure the plugin by setting up their crypto wallet addresses and selecting the specific cryptocurrencies they wish to accept. At checkout, customers select their preferred cryptocurrency and are provided with the wallet address and payment amount. The plugin monitors the blockchain for transaction confirmation. Once the transaction is verified, the order is automatically processed. This setup not only expands the payment options available to customers, but also leverages the security and efficiency of blockchain technology.
+
+
+* Which cryptocurrencies does the WooCommerce crypto plugin support?
+All currencies supported by the Cryptomus payment gateway, including Bitcoin, Ethereum, Tether, etc.    
+
+
+* Can I customize the checkout process for crypto payments on WordPress?
+Yes, you can customize the crypto payment checkout process on WordPress to improve the user experience and meet specific business requirements. The Cryptomus cryptocurrency payment plugin for WordPress offers flexible customization, allowing you to adjust elements such as the payment method name or logo.  
+
+
+* How do I accept Bitcoin on WordPress using this plugin?
+Once integrated via the Cryptomus plugin, you can invoice your customers in Bitcoin currency or use the Auto-convert feature to receive Bitcoin no matter what currencies your customers pay you in.
+
+
+* How do I get started with the WordPress cryptocurrency payment plugin?
+First of all, you need to download the plugin, and then install it as we described above. Then you are ready to start accepting payments with Cryptomus on your WordPress website. 
+
+* Is it possible to accept crypto donations with Cryptomus?
+Sure, just share your wallet address with visitors and get paid anytime, or create a payment widget, customize the design, and place it anywhere in your project. 
+ 
+* How can I accept fiat payments via Cryptomus?
+You can use Cryptomus as a fiat-to-crypto payment gateway by letting your customers pay with fiat using third-party links from our partners. Just generate a special link and share it with your customers.
+
+
+
+Any questions left? Contact our [support team](https://t.me/cryptomussupport).			
 
 
 == Installation ==
-
+ 
 == Upgrade Notice ==
-
+ 
 == Screenshots ==
- 1. Accept Payments in Cryptocurrencies for WooCommerce.
- 2. The customer's journey when paying with Cryptomus.
-
+ 
 == Changelog ==
-
+ 
 == Frequently Asked Questions ==
-
-
+ 
+== Donations ==
